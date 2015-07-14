@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Http\Request;
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -11,22 +13,22 @@
 |
 */
 
-$app->get('{path:.*}', function ($path, Illuminate\Http\Request $request) use ($app)
+$app->get('{path:.*}', function (Request $request) use ($app)
 {
     return App\Services\PassThrough::makeRequest($request);
 });
 
-$app->post('{path:.*}', function ($path, Illuminate\Http\Request $request) use ($app)
+$app->post('{path:.*}', function (Request $request) use ($app)
 {
     return App\Services\PassThrough::makeRequest($request);
 });
 
-$app->put('{path:.*}', function ($path, Illuminate\Http\Request $request) use ($app)
+$app->put('{path:.*}', function (Request $request) use ($app)
 {
     return App\Services\PassThrough::makeRequest($request);
 });
 
-$app->delete('{path:.*}', function ($path, Illuminate\Http\Request $request) use ($app)
+$app->delete('{path:.*}', function (Request $request) use ($app)
 {
     return App\Services\PassThrough::makeRequest($request);
 });

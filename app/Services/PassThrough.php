@@ -2,6 +2,7 @@
 
 use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception as GuzzleException;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use Illuminate\Http\Request;
@@ -10,13 +11,6 @@ use League\Url\Url;
 
 class PassThrough
 {
-    /**
-     * Headers to pass to upstream
-     *
-     * @var array
-     */
-    protected static $headersToPass = ['Content-Type', 'X-Pagination'];
-
     /**
      * Parse host information from keyed local host name
      *
@@ -69,6 +63,9 @@ class PassThrough
 
             return static::createLocalResponse($response);
         } catch (Exception $e) {
+            if (get_class($e) == GuzzleException\ClientException::class) {
+                return static::createLocalResponse($e->getResponse());
+            }
             abort(404);
         }
     }
@@ -82,8 +79,10 @@ class PassThrough
      */
     protected static function createLocalResponse(GuzzleResponse $guzzleResponse)
     {
-        $response = new Response;
-        $response->setContent($guzzleResponse->getBody());
+        $response = new Response(
+            $guzzleResponse->getBody(),
+            $guzzleResponse->getStatusCode()
+        );
 
         $headers = $guzzleResponse->getHeaders();
         array_walk($headers, function ($values, $name) use ($response) {
