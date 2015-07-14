@@ -15,3 +15,18 @@ $app->get('{path:.*}', function ($path, Illuminate\Http\Request $request) use ($
 {
     return App\Services\PassThrough::makeRequest($request);
 });
+
+$app->post('{path:.*}', function ($path, Illuminate\Http\Request $request) use ($app)
+{
+    return App\Services\PassThrough::makeRequest($request);
+});
+
+$app->put('{path:.*}', function ($path, Illuminate\Http\Request $request) use ($app)
+{
+    return App\Services\PassThrough::makeRequest($request);
+});
+
+$app->delete('{path:.*}', function ($path, Illuminate\Http\Request $request) use ($app)
+{
+    return App\Services\PassThrough::makeRequest($request);
+});
