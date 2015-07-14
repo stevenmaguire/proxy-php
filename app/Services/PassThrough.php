@@ -61,7 +61,6 @@ class PassThrough
 
             return static::createLocalResponse($response);
         } catch (Exception $e) {
-            dd($e);
             abort(404);
         }
     }
