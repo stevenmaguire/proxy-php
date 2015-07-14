@@ -43,9 +43,6 @@ class PassThrough
      */
     public static function makeRequest(Request $request)
     {
-        // params
-        // headers
-
         try {
             $url = Url::createFromUrl($request->fullUrl());
 
@@ -57,7 +54,15 @@ class PassThrough
 
             $proxyRequest = new GuzzleRequest($request->method(), $request->path());
 
-            $response = $client->send($proxyRequest, ['timeout' => 2]);
+            array_walk($request->header(), function ($value, $key) {
+                $proxyRequest->withHeader($key, $value);
+            });
+
+            $response = $client->send($proxyRequest, [
+                'timeout' => 2,
+                'query' => $request->query(),
+                'body' => $request->input(),
+            ]);
 
             return static::createLocalResponse($response);
         } catch (Exception $e) {
@@ -77,9 +82,9 @@ class PassThrough
         $response = new Response;
         $response->setContent($guzzleResponse->getBody());
 
-        foreach ($guzzleResponse->getHeaders() as $name => $values) {
+        array_walk($guzzleResponse->getHeaders(), function ($values, $name) {
             $response->header($name, implode(', ', $values), true);
-        }
+        });
 
         return $response;
     }
