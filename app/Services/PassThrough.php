@@ -54,14 +54,17 @@ class PassThrough
 
             $proxyRequest = new GuzzleRequest($request->method(), $request->path());
 
-            array_walk($request->header(), function ($value, $key) {
+            $headers = $request->header();
+            array_walk($headers, function ($value, $key) use ($proxyRequest) {
                 $proxyRequest->withHeader($key, $value);
             });
 
+            $stream = \GuzzleHttp\Psr7\stream_for(json_encode($request->json()->all()));
             $response = $client->send($proxyRequest, [
                 'timeout' => 2,
+                'body' => $stream,
                 'query' => $request->query(),
-                'body' => $request->input(),
+                'form_params' => $request->input(),
             ]);
 
             return static::createLocalResponse($response);
@@ -82,7 +85,8 @@ class PassThrough
         $response = new Response;
         $response->setContent($guzzleResponse->getBody());
 
-        array_walk($guzzleResponse->getHeaders(), function ($values, $name) {
+        $headers = $guzzleResponse->getHeaders();
+        array_walk($headers, function ($values, $name) use ($response) {
             $response->header($name, implode(', ', $values), true);
         });
 
